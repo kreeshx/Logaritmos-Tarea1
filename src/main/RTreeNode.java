@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class RTreeNode implements Serializable{
   
@@ -27,13 +28,13 @@ public class RTreeNode implements Serializable{
       this.childID=new java.util.ArrayList<Integer>(this.M); //solo si no somos hoja podemos tener hijos
     }    
   }
+
   
-  
-  public RTreeNode(boolean b) {
-    // TODO Auto-generated constructor stub
+  public boolean hijoEsHoja(){
+    if(this.childID.get(0)){
+      
+    }
   }
-
-
   //getter para el ID
   public Integer getId() {
     
@@ -74,7 +75,7 @@ public class RTreeNode implements Serializable{
     }  
   }
 
-  public int crecimiento(Rectangulo child, Rectangulo insercion){
+  public static int crecimiento(Rectangulo child, Rectangulo insercion){
     int ancho = 0;
     int alto = 0;
     //calcular ancho
@@ -106,5 +107,17 @@ public class RTreeNode implements Serializable{
     return (ancho*alto) - (child.ancho*child.alto);
   }
 
-  
+  public int menorCrecimiento(Rectangulo insercion){
+    int minimo  = Integer.MAX_VALUE;
+    int id_minimo = 0;
+    for (int i = 0; i < this.childID.size(); i++){
+      Rectangulo rec = RTreeNode.readFromDisk(this.childID.get(i)).mbr;
+      int crecimiento = crecimiento(rec,insercion);
+      if(crecimiento < minimo){
+        minimo = crecimiento;
+        id_minimo = this.childID.get(i);
+      }
+    }
+    return id_minimo;
+  }
 }

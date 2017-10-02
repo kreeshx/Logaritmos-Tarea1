@@ -35,6 +35,7 @@ public class RTree implements Serializable {
    
    //metodo buscar que hace un dfs sobre el arbol para buscar a los rectangulos que intersectan con C
    public Par<Integer,List<Rectangulo>> buscar(Rectangulo C){
+     
      Stack<Integer> stack = new Stack(); //stack donde se almacenaran los nodos posibles
      stack.add(this.rootID); //agrego el primer nodo a evaluar en el stack
      Par<Integer,List<Rectangulo>> ans = new Par(0,new ArrayList<>()); //par solucion
@@ -62,15 +63,21 @@ public class RTree implements Serializable {
            return false;
          }).collect(Collectors.toList()));
        }
-     }
-     
-     
-     
-     
+     }     
      return null;
    }
    
    
+   //método que inserta un rectangulo al arbol y retorna la cantidad de accesos a disco 
+   int insertar(Rectangulo rec){
+     int accesos = 0;
+     RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M);
+     if (this.root.childID.size()<this.M){
+       this.root.childID.add(nodoNuevo.id);
+     }
+     
+     return accesos;
+   }
    
    //método que escribe un arbol en disco  
 
@@ -87,12 +94,7 @@ public class RTree implements Serializable {
      }  
    }  
   
-   public int menorCrecimiento(ArrayList<Rectangulo> childs, Rectangulo insercion){
-     for (int i = 0; i < childs.size(); i++){
-       
-     }
-     return 0;
-   }
+
   
   
   public static void main(String[] args) {
