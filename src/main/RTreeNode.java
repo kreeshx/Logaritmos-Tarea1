@@ -60,18 +60,51 @@ public class RTreeNode implements Serializable{
     }  
   }  
   
-//escribir el nodo en disco 
-public void writeToDisk() {  
-  try {  
-    ObjectOutputStream out  
-      = new ObjectOutputStream  
-      (new FileOutputStream(RTree.DIR + "r" + id + ".node"));  
-    out.writeObject(this);  
-    out.close();  
-  } catch (Exception e) {  
-    e.printStackTrace();  
-    System.exit(1);  
-  }  
-}  
+  //escribir el nodo en disco 
+  public void writeToDisk() {  
+    try {  
+      ObjectOutputStream out  
+        = new ObjectOutputStream  
+        (new FileOutputStream(RTree.DIR + "r" + id + ".node"));  
+      out.writeObject(this);  
+      out.close();  
+    } catch (Exception e) {  
+      e.printStackTrace();  
+      System.exit(1);  
+    }  
+  }
 
+  public int crecimiento(Rectangulo child, Rectangulo insercion){
+    int ancho = 0;
+    int alto = 0;
+    //calcular ancho
+    if (insercion.a[0] < child.a[0]){
+      ancho = (child.ancho + (child.a[0] - insercion.a[0]));
+    }
+    else if (((insercion.a[0] - child.a[0]) + (insercion.ancho - child.a[0])) < child.ancho){
+      ancho = child.ancho;
+    }
+    else if (((child.a[0] - insercion.a[0]) + (child.ancho - insercion.a[0])) < insercion.ancho){
+      ancho = insercion.ancho;
+    }
+    else if (insercion.a[0] > (child.a[0] + child.ancho)){
+      ancho = (child.ancho + (insercion.a[0] + insercion.ancho));
+    }
+    //calcular alto
+    if (insercion.a[1] < child.a[1]){
+      alto = (child.alto + (child.a[1] - insercion.a[1]));
+    }
+    else if (((insercion.a[1] - child.a[1]) + (insercion.alto - child.a[1])) < child.alto){
+      alto = child.alto;
+    }
+    else if (((child.a[1] - insercion.a[1]) + (child.alto - insercion.a[1])) < insercion.alto){
+      alto = insercion.alto;
+    }
+    else if (insercion.a[1] > (child.a[1] + child.alto)){
+      alto = (child.alto + (insercion.a[1] + insercion.alto));
+    }
+    return (ancho*alto) - (child.ancho*child.alto);
+  }
+
+  
 }

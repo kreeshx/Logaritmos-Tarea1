@@ -87,9 +87,12 @@ public class RTree implements Serializable {
      }  
    }  
   
-  
-  
-  
+   public int menorCrecimiento(ArrayList<Rectangulo> childs, Rectangulo insercion){
+     for (int i = 0; i < childs.size(); i++){
+       
+     }
+     return 0;
+   }
   
   
   public static void main(String[] args) {
