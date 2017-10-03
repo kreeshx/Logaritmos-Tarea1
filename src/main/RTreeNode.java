@@ -19,9 +19,10 @@ public class RTreeNode implements Serializable{
  
   //funcion constructor
   //especifica si es una hoja o no
-  public RTreeNode(boolean leaf, int m , int M){
+  public RTreeNode(boolean leaf, int m , int M,Rectangulo mbr){
     this.m=m;
     this.M=M;
+    this.mbr=mbr;
    
     this.id=IdGenerator.nextId(); //crear el id de este nodo
     if(!leaf){
@@ -29,12 +30,18 @@ public class RTreeNode implements Serializable{
     }    
   }
 
-  
+  //metodo que avisa si sus hijos son hojas. 
+  //se realiza una lectura a disco. 
   public boolean hijoEsHoja(){
-    if(this.childID.get(0)){
-      
+    RTreeNode hijo = RTreeNode.readFromDisk(this.childID.get(0)); //primer hijo
+    if(hijo.childID==null){
+      return true;
     }
-  }
+    else 
+      return false;
+  }               
+  
+  
   //getter para el ID
   public Integer getId() {
     
@@ -107,6 +114,7 @@ public class RTreeNode implements Serializable{
     return (ancho*alto) - (child.ancho*child.alto);
   }
 
+  //calcula cual de los hijos crece menos dado un rectangulo
   public int menorCrecimiento(Rectangulo insercion){
     int minimo  = Integer.MAX_VALUE;
     int id_minimo = 0;
@@ -119,5 +127,26 @@ public class RTreeNode implements Serializable{
       }
     }
     return id_minimo;
+  }
+
+  
+  //metodo que redirige a que tipo de heuristica haremos 
+  public void arreglar(int tipo) {
+    if (tipo == 1){
+      this.lineal();
+    }
+    else {
+      this.greene();
+    }
+  }
+
+  private void greene() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  private void lineal() {
+    // TODO Auto-generated method stub
+    
   }
 }

@@ -12,9 +12,7 @@ public class RTree implements Serializable {
   public static final String DIR  
   = RTree.class.getProtectionDomain().getCodeSource()  
   .getLocation().getFile() + File.separator;
-
-   
-
+  
   public int rootID; //id del nodo raiz
 
   public int m;
@@ -69,18 +67,54 @@ public class RTree implements Serializable {
    
    
    //método que inserta un rectangulo al arbol y retorna la cantidad de accesos a disco 
-   int insertar(Rectangulo rec){
+   /*int insertar(Rectangulo rec){
      int accesos = 0;
-     RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M);
+     RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M ,rec);
+     
+     int id =this.root.menorCrecimiento(rec); //buscamos a que hijo irnos
+     RTreeNode.readFromDisk(id).insertar(rec);
      if (this.root.childID.size()<this.M){
        this.root.childID.add(nodoNuevo.id);
      }
      
+     
+     return accesos;
+   }*/
+     
+   
+   //método que inserta un rectangulo al arbol y la heuristica a usar y retorna la cantidad de accesos a disco 
+   int insertar(Rectangulo rec, int tipo){
+     int accesos = 0;
+     RTreeNode tempRoot = this.root;
+     RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M ,rec);
+     
+     while(!tempRoot.hijoEsHoja()){ //mientras no lleguemos al penultimo
+       accesos++;
+       int id = tempRoot.menorCrecimiento(rec); //buscamos a que hijo irnos
+       tempRoot = RTreeNode.readFromDisk(id);
+       
+     }
+     
+     //hay que insertar en el hijo de temproot
+     if (tempRoot.childID.size()<this.M){
+       tempRoot.childID.add(nodoNuevo.id);
+       tempRoot.writeToDisk();
+       return accesos; 
+     }
+     
+     else {
+       tempRoot.childID.add(nodoNuevo.id);
+       tempRoot.writeToDisk();
+       tempRoot.arreglar(tipo);      
+     }
+     
+     
      return accesos;
    }
    
+   
+   
    //método que escribe un arbol en disco  
-
    public void writeToDisk() {  
      try {  
        ObjectOutputStream out  
@@ -92,10 +126,7 @@ public class RTree implements Serializable {
        e.printStackTrace();  
        System.exit(1);  
      }  
-   }  
-  
-
-  
+   }    
   
   public static void main(String[] args) {
     // TODO Auto-generated method stub
