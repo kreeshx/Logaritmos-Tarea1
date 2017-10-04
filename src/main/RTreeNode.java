@@ -195,11 +195,13 @@ public class RTreeNode implements Serializable{
 	  
 	  for(int i = 0 ; i<primeraMitadNodos.length;i++){
 		  nuevoNodoPadre1.childID.add(primeraMitadNodos[i].id);
+		  nuevoNodoPadre1.aumentarTamaño(primeraMitadNodos[i].mbr);
 		  primeraMitadNodos[i].father = nuevoNodoPadre1.id;
 		  primeraMitadNodos[i].writeToDisk();
 	  }
 	  for(int i = 0 ; i<segundaMitadNodos.length;i++){
 		  nuevoNodoPadre2.childID.add(segundaMitadNodos[i].id);
+		  nuevoNodoPadre2.aumentarTamaño(segundaMitadNodos[i].mbr);
 		  segundaMitadNodos[i].father = nuevoNodoPadre2.id;
 		  segundaMitadNodos[i].writeToDisk();
 	  }
