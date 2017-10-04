@@ -15,7 +15,7 @@ public class RTreeNode implements Serializable{
   public int id; //id de este nodo
   public int m; //se almacenan al menos m hijos
   public int M; //se almacenan a lo mas M hijos
-  int father; //id del padre
+  Integer father; //id del padre
   boolean isRoot;
   Rectangulo mbr;
  
@@ -25,7 +25,8 @@ public class RTreeNode implements Serializable{
     this.m=m;
     this.M=M;
     this.mbr=mbr;
-   //TODO: Ver como se setea el padre
+    this.father=null;
+    //TODO: Ver como se setea el padre
     this.id=IdGenerator.nextId(); //crear el id de este nodo
     if(!leaf){
       this.childID=new java.util.ArrayList<Integer>(this.M); //solo si no somos hoja podemos tener hijos
@@ -66,7 +67,7 @@ public class RTreeNode implements Serializable{
     try {  
       ObjectInputStream in  
         = new ObjectInputStream  
-        (new FileInputStream(RTree.DIR + "b" + id + ".node"));  
+        (new FileInputStream(RTree.DIR + "r" + id + ".node"));  
       return (RTreeNode)(in.readObject());  
     } catch (Exception e) {  
       e.printStackTrace();  
@@ -195,13 +196,13 @@ public class RTreeNode implements Serializable{
 	  
 	  for(int i = 0 ; i<primeraMitadNodos.length;i++){
 		  nuevoNodoPadre1.childID.add(primeraMitadNodos[i].id);
-		  nuevoNodoPadre1.aumentarTamaño(primeraMitadNodos[i].mbr);
+		  nuevoNodoPadre1.aumentarTamano(primeraMitadNodos[i].mbr);
 		  primeraMitadNodos[i].father = nuevoNodoPadre1.id;
 		  primeraMitadNodos[i].writeToDisk();
 	  }
 	  for(int i = 0 ; i<segundaMitadNodos.length;i++){
 		  nuevoNodoPadre2.childID.add(segundaMitadNodos[i].id);
-		  nuevoNodoPadre2.aumentarTamaño(segundaMitadNodos[i].mbr);
+		  nuevoNodoPadre2.aumentarTamano(segundaMitadNodos[i].mbr);
 		  segundaMitadNodos[i].father = nuevoNodoPadre2.id;
 		  segundaMitadNodos[i].writeToDisk();
 	  }
@@ -290,12 +291,12 @@ private void lineal() {
       if (grown1 > grown2){
     	    //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre1.childID.add(this.childID.get(i));
-        nuevoNodoPadre1.aumentarTamaño(tempRec);
+        nuevoNodoPadre1.aumentarTamano(tempRec);
         tempNodo.father = nuevoNodoPadre1.id;
       } else {
     	  //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre2.childID.add(this.childID.get(i));
-        nuevoNodoPadre2.aumentarTamaño(tempRec);
+        nuevoNodoPadre2.aumentarTamano(tempRec);
         tempNodo.father = nuevoNodoPadre2.id;
       }
       //Lo guardamos en disco
@@ -311,7 +312,7 @@ private void lineal() {
   }
 
   
-  private void aumentarTamaño(Rectangulo tempRec) {
+  private void aumentarTamano(Rectangulo tempRec) {
 	  //AUMENTA TAMAÑO (por si el nombre no es muy obvio)
 	  int[] aumento = crecimiento(this.mbr, tempRec);
 	  this.mbr.ancho = aumento[0];

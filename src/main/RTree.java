@@ -74,14 +74,12 @@ public class RTree implements Serializable {
    //greene -> tipo = 2
    int insertar(Rectangulo rec, int tipo){
 
-     System.out.println("Entramos a insertar");
      int accesos = 0;
      RTreeNode tempRoot = this.root;
      RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M ,rec);
-     
+     nodoNuevo.writeToDisk();
      while(!tempRoot.hijoEsHoja()){ //mientras no lleguemos al penultimo
 
-       System.out.println("Entra a ver el hijo de menor crecimiento");
        accesos++;
        int id = tempRoot.menorCrecimiento(rec); //buscamos a que hijo irnos
        tempRoot = RTreeNode.readFromDisk(id);

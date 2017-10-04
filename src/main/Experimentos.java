@@ -18,7 +18,7 @@ public class Experimentos implements Serializable{
     int[] a = new int[2];
     int alto,ancho;
 
-    System.out.println("Entra a generar rectangulos");
+   
     for (int i = 0; i < n-1; i++) {
       Random rand = new Random();
       a[0] = rand.nextInt(5000);
@@ -27,15 +27,14 @@ public class Experimentos implements Serializable{
       ancho = rand.nextInt(100)+1; //se le suma 1 porque queremos que parta de 1
       Rectangulo rec = new Rectangulo(a, alto, ancho);
 
-      System.out.println("Insertar rectangulo");
       arbol.insertar(rec, tipo);
-
-      System.out.println("Ya inserto rectangulo");
+      if(i%100==0)
+        System.out.println("Ya inserto" + i + "rectangulo");
     }
   }
   
   public static void main(String[] args) {
-    System.out.println("aaaa");
+    
     //leemos las variables de la consola
     Scanner sc = new Scanner(System.in);
     System.out.println("ingrese un n ");
@@ -56,11 +55,11 @@ public class Experimentos implements Serializable{
     alto = rand.nextInt(100)+1; //se le suma 1 porque queremos que parta de 1
     ancho = rand.nextInt(100)+1; //se le suma 1 porque queremos que parta de 1
     Rectangulo rec = new Rectangulo(a, alto, ancho);
-    System.out.println("Se creo el primer rectangulo");
+    
     //creamos el arbol con el nuevo rectangulo
     arbol = new RTree(m, M, rec);
 
-    System.out.println("Se creo el arbol");
+   
     //generamos un arbol con n nodos insertando con el tipo ingresado. 
     generarRectangulos(n, tipo);
   }
