@@ -1,7 +1,16 @@
 package main;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class Rectangulo {
-
+public class Rectangulo implements Serializable {
+  public static final String DIR  
+  = RTree.class.getProtectionDomain().getCodeSource()  
+  .getLocation().getFile() + File.separator;
+  
   public int[] a;
     
   public int alto;
@@ -27,6 +36,23 @@ public class Rectangulo {
     
     return false;
   }
+
+  
+  public void writeToDisk(int id) {  
+    try {  
+      ObjectOutputStream out  
+        = new ObjectOutputStream  
+        (new FileOutputStream(DIR + "rectangulos" + id + ".rec"));  
+      out.writeObject(this);  
+      out.close();  
+    } catch (Exception e) {  
+      e.printStackTrace();  
+      System.exit(1);  
+    }  
+  }
+  
+ 
+  
 
  
   public static void main(String[] args) {
