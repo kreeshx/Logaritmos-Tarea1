@@ -21,8 +21,8 @@ public class RTree implements Serializable {
   public RTreeNode root;
    
    //constructor del RTree
-   public RTree(int m, int M) {
-     RTreeNode root = new RTreeNode(false,m,M);
+   public RTree(int m, int M,Rectangulo rec) {
+     RTreeNode root = new RTreeNode(false,m,M,rec);
      this.root=root;
      this.m=m;
      this.M=M;
@@ -66,23 +66,11 @@ public class RTree implements Serializable {
    }
    
    
-   //método que inserta un rectangulo al arbol y retorna la cantidad de accesos a disco 
-   /*int insertar(Rectangulo rec){
-     int accesos = 0;
-     RTreeNode nodoNuevo = new RTreeNode(true, this.m, this.M ,rec);
-     
-     int id =this.root.menorCrecimiento(rec); //buscamos a que hijo irnos
-     RTreeNode.readFromDisk(id).insertar(rec);
-     if (this.root.childID.size()<this.M){
-       this.root.childID.add(nodoNuevo.id);
-     }
-     
-     
-     return accesos;
-   }*/
-     
+
    
    //método que inserta un rectangulo al arbol y la heuristica a usar y retorna la cantidad de accesos a disco 
+   //linear -> tipo= 1
+   //greene -> tipo = 2
    int insertar(Rectangulo rec, int tipo){
      int accesos = 0;
      RTreeNode tempRoot = this.root;
@@ -93,25 +81,16 @@ public class RTree implements Serializable {
        int id = tempRoot.menorCrecimiento(rec); //buscamos a que hijo irnos
        tempRoot = RTreeNode.readFromDisk(id);
        
-     }
-     
-     //hay que insertar en el hijo de temproot
-     if (tempRoot.childID.size()<this.M){
-       tempRoot.childID.add(nodoNuevo.id);
-       tempRoot.writeToDisk();
-       return accesos; 
-     }
-     
-     else {
-       tempRoot.childID.add(nodoNuevo.id);
-       tempRoot.writeToDisk();
-       tempRoot.arreglar(tipo);      
-     }
-     
+     } //llegamos a la hoja    
+       
+      //se inserta el nodo nuevo a la lista de hijos del tempRoot
+     tempRoot.childID.add(nodoNuevo.id);
+     tempRoot.writeToDisk();
+     //se arreglan los invariantes
+     tempRoot.arreglar(tipo);      
      
      return accesos;
    }
-   
    
    
    //método que escribe un arbol en disco  
