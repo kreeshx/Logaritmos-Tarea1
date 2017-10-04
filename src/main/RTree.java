@@ -21,7 +21,7 @@ public class RTree implements Serializable {
   public RTreeNode root;
    
    //constructor del RTree
-   public RTree(int m, int M,Rectangulo rec) {
+   public RTree(int m, int M, Rectangulo rec) {
      RTreeNode root = new RTreeNode(false,m,M,rec);
      this.root=root;
      this.m=m;
@@ -68,7 +68,7 @@ public class RTree implements Serializable {
    
 
    
-   //método que inserta un rectangulo al arbol y la heuristica a usar y retorna la cantidad de accesos a disco 
+   //mï¿½todo que inserta un rectangulo al arbol y la heuristica a usar y retorna la cantidad de accesos a disco 
    //linear -> tipo= 1
    //greene -> tipo = 2
    int insertar(Rectangulo rec, int tipo){
@@ -87,13 +87,15 @@ public class RTree implements Serializable {
      tempRoot.childID.add(nodoNuevo.id);
      tempRoot.writeToDisk();
      //se arreglan los invariantes
-     tempRoot.arreglar(tipo);      
-     
+     while(!tempRoot.isRoot) {
+       tempRoot.arreglar(tipo);
+       tempRoot = RTreeNode.readFromDisk(tempRoot.father);
+     }
      return accesos;
    }
    
    
-   //método que escribe un arbol en disco  
+   //mï¿½todo que escribe un arbol en disco  
    public void writeToDisk() {  
      try {  
        ObjectOutputStream out  

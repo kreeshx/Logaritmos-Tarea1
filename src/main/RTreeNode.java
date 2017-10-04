@@ -15,6 +15,7 @@ public class RTreeNode implements Serializable{
   public int m; //se almacenan al menos m hijos
   public int M; //se almacenan a lo mas M hijos
   int father; //id del padre
+  boolean isRoot;
   Rectangulo mbr;
  
   //funcion constructor
@@ -157,10 +158,22 @@ public class RTreeNode implements Serializable{
     }
   }
 
+  
+  //****************************************************************
+  //****************************************************************
+  //****************************************************************
+  //****************************************************************
+  
+  
   private void greene() {
-    // TODO Auto-generated method stub
-    
+	  
   }
+  
+  
+  //****************************************************************
+  //****************************************************************
+  //****************************************************************
+  //****************************************************************
 
   private void lineal() {
     Par<int[],Rectangulo[]> par = parLejano(this.childID); //devuelve el par de rectangulos y sus ids
@@ -184,19 +197,26 @@ public class RTreeNode implements Serializable{
     this.eliminarHijo(id1);
     this.eliminarHijo(id2);
     
-   //TODO: Falta agregarle a los nodos un padre
     for(int i = 0 ; i<this.childID.size();i++){
+    	//leemos un nodo del disco
       RTreeNode tempNodo = RTreeNode.readFromDisk(this.childID.get(i));
       Rectangulo tempRec = tempNodo.mbr;
+      //Lo agregamos al mbr que crezca menos
       int grown1 = crecimiento(nuevoNodoPadre1.mbr, tempRec);
       int grown2 = crecimiento(nuevoNodoPadre2.mbr, tempRec);
       if (grown1 > grown2){
+    	    //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre1.childID.add(this.childID.get(i));
+        tempNodo.father = nuevoNodoPadre1.id;
       } else {
+    	  //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre2.childID.add(this.childID.get(i));
+        tempNodo.father = nuevoNodoPadre2.id;
       }
+      //Lo guardamos en disco
+      tempNodo.writeToDisk();
     }
-    
+    //Guardamos los cambios del nodo en disco
     nuevoNodoPadre1.writeToDisk();
     nuevoNodoPadre2.writeToDisk();
     padre.writeToDisk(); 
