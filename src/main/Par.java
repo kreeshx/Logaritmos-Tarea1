@@ -2,8 +2,8 @@ package main;
 
 public class Par<T1, T2> {
   
-  T1 primero;
-  T2 segundo;
+  public T1 primero;
+  public T2 segundo;
   
   public Par(T1 t1,T2 t2) {
     this.primero=t1;

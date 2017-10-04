@@ -63,7 +63,7 @@ public class RTree implements Serializable {
          }).collect(Collectors.toList()));
        }
      }     
-     return null;
+     return ans;
    }
    
    
@@ -72,7 +72,7 @@ public class RTree implements Serializable {
    //m�todo que inserta un rectangulo al arbol y la heuristica a usar y retorna la cantidad de accesos a disco 
    //linear -> tipo= 1
    //greene -> tipo = 2
-   int insertar(Rectangulo rec, int tipo){
+   public int insertar(Rectangulo rec, int tipo){
 
      int accesos = 0;
      RTreeNode tempRoot = this.root;
