@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RTreeNode implements Serializable{
   
@@ -83,7 +84,7 @@ public class RTreeNode implements Serializable{
     }  
   }
 
-  public static int crecimiento(Rectangulo child, Rectangulo insercion){
+  public static int[] crecimiento(Rectangulo child, Rectangulo insercion){
     int ancho = 0;
     int alto = 0;
     //calcular ancho
@@ -112,7 +113,11 @@ public class RTreeNode implements Serializable{
     else if (insercion.a[1] > (child.a[1] + child.alto)){
       alto = (child.alto + (insercion.a[1] + insercion.alto));
     }
-    return (ancho*alto) - (child.ancho*child.alto);
+    //return (ancho*alto) - (child.ancho*child.alto);
+    int[] dimensiones = new int[2];
+    dimensiones[0] = ancho;
+    dimensiones[1] = alto;
+    return dimensiones;
   }
 
   //calcula cual de los hijos crece menos dado un rectangulo
@@ -122,7 +127,8 @@ public class RTreeNode implements Serializable{
     int areaMinimo = 0;
     for (int i = 0; i < this.childID.size(); i++){
       Rectangulo rec = RTreeNode.readFromDisk(this.childID.get(i)).mbr;
-      int crecimiento = crecimiento(rec,insercion);
+      int[] aumentoFinal = crecimiento(rec,insercion);
+      int crecimiento = aumentoFinal[0]*aumentoFinal[1] - (rec.ancho*rec.alto);
       if(crecimiento < minimo){ //si el crecimiento es menor al minimo encontrado
         minimo = crecimiento;
         areaMinimo= rec.alto*rec.alto;
@@ -166,16 +172,83 @@ public class RTreeNode implements Serializable{
   
   
   private void greene() {
+	  Par<int[],Rectangulo[]> par = parLejano(this.childID);
+	  int ejeOriginal = par.primero[2];
+	  int eje = Math.abs(ejeOriginal-1);
+	  RTreeNode[] nodos = ordenarNodos(eje);
+	  int n = nodos.length;
+	  RTreeNode[] primeraMitadNodos = Arrays.copyOfRange(nodos, 0, n/2);
+	  RTreeNode[] segundaMitadNodos = Arrays.copyOfRange(nodos, n/2, n);
 	  
+	  RTreeNode nuevoNodoPadre1 = new RTreeNode(false, this.m, this.M, primeraMitadNodos[0].mbr); //nodo con el mbr inicial
+	  RTreeNode nuevoNodoPadre2 = new RTreeNode(false, this.m, this.M, segundaMitadNodos[0].mbr);//nodo con el mbr inicial
+	  RTreeNode padre = RTreeNode.readFromDisk(this.father); //traemos el padre
+	  
+	  padre.childID.add(nuevoNodoPadre1.id);
+	  padre.childID.add(nuevoNodoPadre2.id);
+	 
+	  
+	  for(int i = 0 ; i<primeraMitadNodos.length;i++){
+		  nuevoNodoPadre1.childID.add(primeraMitadNodos[i].id);
+		  primeraMitadNodos[i].father = nuevoNodoPadre1.id;
+		  primeraMitadNodos[i].writeToDisk();
+	  }
+	  for(int i = 0 ; i<segundaMitadNodos.length;i++){
+		  nuevoNodoPadre2.childID.add(segundaMitadNodos[i].id);
+		  segundaMitadNodos[i].father = nuevoNodoPadre2.id;
+		  segundaMitadNodos[i].writeToDisk();
+	  }
+	  padre.eliminarHijo(this.id);
+	  //Guardamos los cambios del nodo en disco
+	  nuevoNodoPadre1.writeToDisk();
+	  nuevoNodoPadre2.writeToDisk();
+	  padre.writeToDisk(); 
   }
   
+  private RTreeNode[] ordenarNodos(int eje) {
+	// TODO Auto-generated method stub
+	RTreeNode[] lista = new RTreeNode[this.childID.size()];
+	for (int i = 0; i < this.childID.size(); i++) {
+		RTreeNode tmpNode = readFromDisk(i);
+		lista[i] = tmpNode;
+	}
+	lista = quicksort(lista, 0, lista.length-1, eje);
+	return lista;
+  }
   
-  //****************************************************************
+  private RTreeNode[] quicksort(RTreeNode[] lista, int izq, int der, int eje) {
+	RTreeNode pivote = lista[izq];
+	int i = izq;
+	int j = der;
+	RTreeNode aux;
+	
+	while(i<j) {
+		while (lista[i].mbr.a[eje] <= pivote.mbr.a[eje] && i<j) i++;
+		while (lista[j].mbr.a[eje] > pivote.mbr.a[eje]) j--;
+		if (i < j) {
+			aux = lista[i];
+			lista[i] = lista[j];
+			lista[j] = aux;
+		}
+	}
+	
+	lista[izq] = lista[j];
+	lista[j] = pivote;
+	if (izq < j-1) {
+		lista = quicksort(lista, izq, j-1, eje);
+	} if (j+1 < der) {
+		lista = quicksort(lista, j+1, der, eje);
+	}
+	return lista;
+  }
+
+//****************************************************************
   //****************************************************************
   //****************************************************************
   //****************************************************************
 
-  private void lineal() {
+
+private void lineal() {
     Par<int[],Rectangulo[]> par = parLejano(this.childID); //devuelve el par de rectangulos y sus ids
     Rectangulo recMenor = par.segundo[0];
     Rectangulo recMayor = par.segundo[1];
@@ -202,20 +275,26 @@ public class RTreeNode implements Serializable{
       RTreeNode tempNodo = RTreeNode.readFromDisk(this.childID.get(i));
       Rectangulo tempRec = tempNodo.mbr;
       //Lo agregamos al mbr que crezca menos
-      int grown1 = crecimiento(nuevoNodoPadre1.mbr, tempRec);
-      int grown2 = crecimiento(nuevoNodoPadre2.mbr, tempRec);
+      int[] aumento1 = crecimiento(nuevoNodoPadre1.mbr, tempRec);
+      int[] aumento2 = crecimiento(nuevoNodoPadre2.mbr, tempRec);
+      int grown1 = (aumento1[0]*aumento1[0]) - (nuevoNodoPadre1.mbr.ancho*nuevoNodoPadre1.mbr.alto);
+      int grown2 = (aumento2[0]*aumento2[0]) - (nuevoNodoPadre2.mbr.ancho*nuevoNodoPadre2.mbr.alto);
+      //TODO: EL tamaño del nodo no crece, cmabiar esto plis
       if (grown1 > grown2){
     	    //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre1.childID.add(this.childID.get(i));
+        nuevoNodoPadre1.aumentarTamaño(tempRec);
         tempNodo.father = nuevoNodoPadre1.id;
       } else {
     	  //modificamos los nodos y sus atributos para que sean consistentes
         nuevoNodoPadre2.childID.add(this.childID.get(i));
+        nuevoNodoPadre2.aumentarTamaño(tempRec);
         tempNodo.father = nuevoNodoPadre2.id;
       }
       //Lo guardamos en disco
       tempNodo.writeToDisk();
     }
+    padre.eliminarHijo(this.id);
     //Guardamos los cambios del nodo en disco
     nuevoNodoPadre1.writeToDisk();
     nuevoNodoPadre2.writeToDisk();
@@ -225,7 +304,11 @@ public class RTreeNode implements Serializable{
   }
 
   
-  public void eliminarHijo(int id1) {
+  private void aumentarTamaño(Rectangulo tempRec) {
+	  //AUMENTA TAMAÑO
+  }
+
+public void eliminarHijo(int id1) {
     this.childID.remove(id1);
     
   }
@@ -235,7 +318,7 @@ public class RTreeNode implements Serializable{
     int[] lados = new int[8];
     int[] ids = new int[8];
     Rectangulo[] recs = new Rectangulo[2];
-    Par<int[],Rectangulo[]> ans = new Par(new int[2], new Rectangulo[2]);
+    Par<int[],Rectangulo[]> ans = new Par(new int[3], new Rectangulo[2]);
     
     lados[0] = Integer.MAX_VALUE; //rectangulo que tiene la derecha mas a la izquierda
     lados[1] = Integer.MIN_VALUE; //rectangulo que tiene la izquierda mas a la derecha
@@ -301,6 +384,8 @@ public class RTreeNode implements Serializable{
     int[] indicesElegidos = parElegido(lados);
     ans.primero[0] = ids[indicesElegidos[0]];
     ans.primero[1] = ids[indicesElegidos[1]];
+    //0: horizontal, 1: vertical
+    ans.primero[2] = ids[indicesElegidos[2]];
     ans.segundo[0] = recs[indicesElegidos[1]];
     ans.segundo[1] = recs[indicesElegidos[1]];
     return ans;
@@ -318,10 +403,12 @@ public class RTreeNode implements Serializable{
     if (horizontal > vertical){
       respuestas[0] = 0;
       respuestas[1] = 1;
+      respuestas[2] = 0;
     }
     else {
       respuestas[0] = 5;
       respuestas[1] = 6;
+      respuestas[2] = 1;
     }
     return respuestas;
   }
