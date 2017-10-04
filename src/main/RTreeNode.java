@@ -35,13 +35,18 @@ public class RTreeNode implements Serializable{
   //metodo que avisa si sus hijos son hojas. 
   //se realiza una lectura a disco. 
   public boolean hijoEsHoja(){
-    RTreeNode hijo = RTreeNode.readFromDisk(this.childID.get(0)); //primer hijo
-    if(hijo.childID==null){
-      return true;
-    }
-    else 
-      return false;
-  }               
+	  try{
+		  RTreeNode hijo = RTreeNode.readFromDisk(this.childID.get(0)); //primer hijo
+	      if(hijo.childID==null){
+	        return true;
+	      }
+	      else 
+	        return false;
+	    }
+	    catch (Exception e){
+	      return true;
+	    }
+	  }          
   
   
   //getter para el ID
@@ -305,7 +310,10 @@ private void lineal() {
 
   
   private void aumentarTamaño(Rectangulo tempRec) {
-	  //AUMENTA TAMAÑO
+	  //AUMENTA TAMAÑO (por si el nombre no es muy obvio)
+	  int[] aumento = crecimiento(this.mbr, tempRec);
+	  this.mbr.ancho = aumento[0];
+	  this.mbr.alto = aumento[1];
   }
 
 public void eliminarHijo(int id1) {
