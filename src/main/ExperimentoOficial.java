@@ -7,9 +7,31 @@ import java.util.Random;
 public class ExperimentoOficial {
   
   //metodo que escribe en un archivo la cantidad de accesos a disco en la busqueda y el tiempo que se demora por cada query
-  private static void generarQueries(int i) {
-    
-    return null;
+  private static void generarQueries(int n, RTree arbol1, RTree arbol2) {
+    int[] a = new int[2];
+    int alto,ancho;
+    long timeLinear = 0;
+    long timeGreene = 0;
+    long timeIni, timeOut;
+    for (int i = 0; i < n-1; i++) {
+      Random rand = new Random();
+      a[0] = rand.nextInt(5000);
+      a[1] = rand.nextInt(5000);
+      alto = rand.nextInt(100)+1; //se le suma 1 porque queremos que parta de 1
+      ancho = rand.nextInt(100)+1; //se le suma 1 porque queremos que parta de 1
+      Rectangulo rec = new Rectangulo(a, alto, ancho);
+      timeIni = System.nanoTime();
+      arbol1.buscar(rec);
+      timeOut = System.nanoTime();
+      timeLinear += timeIni - timeOut;
+      timeIni = System.nanoTime();
+      arbol2.buscar(rec);
+      timeOut = System.nanoTime();
+      timeGreene += timeIni - timeOut;
+    }
+    timeGreene /= 1000000000.0;
+    timeLinear /= 1000000000.0;
+    //TODO falta escribir en archivo  --> Experimento 3
   }
 
   public static void generarRectangulos(int n,RTree arbol1, RTree arbol2){
