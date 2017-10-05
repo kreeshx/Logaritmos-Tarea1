@@ -39,13 +39,11 @@ public class Experimentos implements Serializable{
     Scanner sc = new Scanner(System.in);
     System.out.println("ingrese un n ");
     int n = sc.nextInt();
-    System.out.println("ingrese m ");
-    int m = sc.nextInt();
-    System.out.println("ingrese M ");
-    int M = sc.nextInt();
+    int M = 100;
+    int m = (int)0.4*M;
     System.out.println("ingrese un tipo, 1 si es linear, 2 si es greene ");
     int tipo = sc.nextInt();
-    
+    System.out.println("crear un arbol nuevo? ");
     //generamos el primer rectangulo para inicializar el arbol
     Random rand = new Random();
     int[] a = new int[2];
