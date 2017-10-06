@@ -41,6 +41,9 @@ public class ExperimentoOficial {
       accesosGreene += ans2.primero;
       printGreene.write("Accesos a memoria: " + ans2.primero + "   Tiempo de busqueda: " + tf + " nanosegundos");
       printGreene.write(System.lineSeparator());
+      if(i%10==0){
+        System.out.println("Se han buscado" + i +"rectangulos en el experimento de" + n);
+      }
     }
     timeGreene /= 1000000000.0;
     timeLinear /= 1000000000.0;
@@ -75,6 +78,9 @@ public class ExperimentoOficial {
       arbol2.insertar(rec,2);
       timeOut = System.nanoTime();
       timeGreene += timeOut-timeIni;
+      if(i%10==0){
+        System.out.println("Se han insertado" + i +"rectangulos en el experimento de" + n);
+      }
     }
     timeGreene /= 1000000000.0;
     timeLinear /= 1000000000.0;
